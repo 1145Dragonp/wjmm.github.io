@@ -2,151 +2,134 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<title>混沌命名器</title>
+<title>混沌命名器 Pro</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
-  :root{
-    --bg:#1e1e1e;
-    --card:#252526;
-    --accent:#569cd6;
-    --text:#cccccc;
-    --sub:#888888;
-    --border:#3e3e42;
-  }
+  :root{--bg:#1e1e1e;--card:#252526;--accent:#569cd6;--text:#ccc;--sub:#888;--border:#3e3e42;}
   *{box-sizing:border-box;margin:0;padding:0;font-family:"Segoe UI","Microsoft YaHei",sans-serif;}
-  body{
-    min-height:100vh;
-    background:var(--bg);
-    color:var(--text);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-  }
-  .wrapper{
-    width:90%;
-    max-width:480px;
-    background:var(--card);
-    border:1px solid var(--border);
-    border-radius:6px;
-    padding:32px 28px;
-  }
-  h1{
-    font-size:22px;
-    margin-bottom:8px;
-    font-weight:600;
-    letter-spacing:.5px;
-  }
-  p{
-    font-size:14px;
-    color:var(--sub);
-    margin-bottom:24px;
-  }
-  label{
-    font-size:13px;
-    color:var(--sub);
-    display:block;
-    margin-bottom:6px;
-  }
-  input[type=file]{
-    width:100%;
-    padding:8px 10px;
-    background:var(--bg);
-    border:1px solid var(--border);
-    color:var(--text);
-    border-radius:4px;
-    font-size:14px;
-    cursor:pointer;
-  }
-  select{
-    width:100%;
-    padding:8px 10px;
-    background:var(--bg);
-    border:1px solid var(--border);
-    color:var(--text);
-    border-radius:4px;
-    font-size:14px;
-    cursor:pointer;
-  }
-  button{
-    width:100%;
-    margin-top:20px;
-    padding:10px;
-    background:var(--accent);
-    color:#fff;
-    border:none;
-    border-radius:4px;
-    font-size:15px;
-    cursor:pointer;
-    transition:background .2s;
-  }
+  body{background:var(--bg);color:var(--text);display:flex;justify-content:center;padding:40px 20px;}
+  .wrap{width:100%;max-width:640px;display:flex;gap:20px;}
+  .panel{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:20px;}
+  #left{flex:1.2;}#right{flex:1;}
+  h1{font-size:20px;margin-bottom:8px;font-weight:600;}
+  p{font-size:13px;color:var(--sub);margin-bottom:15px;}
+  label{font-size:12px;color:var(--sub);display:block;margin-bottom:4px;}
+  input[type=file]{width:100%;padding:6px 8px;background:var(--bg);border:1px solid var(--border);color:var(--text);font-size:13px;border-radius:4px;}
+  select{width:100%;padding:6px;font-size:13px;background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:4px;}
+  button{padding:6px 10px;font-size:13px;border:none;border-radius:4px;cursor:pointer;background:var(--accent);color:#fff;}
   button:hover{background:#4b8cc7;}
-  #result{
-    margin-top:18px;
-    font-size:13px;
-    word-break:break-all;
-    color:var(--sub);
-  }
+  .item{display:flex;align-items:center;justify-content:space-between;padding:6px 8px;margin-top:6px;background:var(--bg);border-radius:4px;font-size:13px;}
+  .item span{max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .down::before{content:"⬇ ";}
+  .reg::before{content:"🔄 ";}
+  .mgr::before{content:"⚙ ";}
+  #singleManage{display:none;margin-top:10px;}
+  #singleManage input{width:100%;padding:4px 6px;margin-top:4px;font-size:13px;background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:4px;}
 </style>
 </head>
 <body>
-<div class="wrapper">
-  <h1>混沌命名器</h1>
-  <p>上传文件，选择风格，即刻生成不可预测的文件名。</p>
+<div class="wrap">
+  <div class="panel" id="left">
+    <h1>批量处理</h1>
+    <p>可多选文件，逐个生成混沌名并单独下载</p>
+    <label>① 选择文件（可多选）</label>
+    <input type="file" id="multiFile" multiple>
+    <label style="margin-top:10px;">② 命名风格</label>
+    <select id="styleSelect">
+      <option value="full">完全混沌</option>
+      <option value="emoji">Emoji风暴</option>
+      <option value="base64">Base64幽灵</option>
+      <option value="uuid">UUID碎片</option>
+      <option value="cat">猫言猫语</option>
+      <option value="reverse">反转人类</option>
+      <option value="hallucination">AI幻觉</option>
+      <option value="program">程序采样</option>
+    </select>
+    <div id="list"></div>
+  </div>
 
-  <label for="fileInput">1. 选择文件</label>
-  <input type="file" id="fileInput">
-
-  <label for="chaosMode" style="margin-top:16px;">2. 命名风格</label>
-  <select id="chaosMode">
-    <option value="full">完全混沌</option>
-    <option value="emoji">Emoji 风暴</option>
-    <option value="base64">Base64 幽灵</option>
-    <option value="uuid">UUID 碎片</option>
-    <option value="cat">猫言猫语</option>
-    <option value="reverse">反转人类</option>
-    <option value="hallucination">AI 幻觉</option>
-    <option value="program">程序采样</option>
-  </select>
-
-  <button onclick="generate()">生成并下载</button>
-  <div id="result"></div>
+  <div class="panel" id="right">
+    <h1>单文件精管</h1>
+    <p>只选一个文件时可反复生成、手动改名将就下载</p>
+    <label>① 选择单个文件</label>
+    <input type="file" id="singleFile">
+    <label style="margin-top:10px;">② 命名风格</label>
+    <select id="singleStyle">
+      <option value="full">完全混沌</option>
+      <option value="emoji">Emoji风暴</option>
+      <option value="base64">Base64幽灵</option>
+      <option value="uuid">UUID碎片</option>
+      <option value="cat">猫言猫语</option>
+      <option value="reverse">反转人类</option>
+      <option value="hallucination">AI幻觉</option>
+      <option value="program">程序采样</option>
+    </select>
+    <button id="reGen" class="reg">重新生成</button>
+    <div id="singleManage">
+      <label>文件名（含扩展名）</label>
+      <input id="nameInput" type="text">
+      <button id="downSingle" class="down">立即下载</button>
+    </div>
+  </div>
 </div>
 
 <script>
 const engines={
-  full:()=>{
-    const f=[()=>Math.random().toString(36).slice(2,10),
-             ()=>[...Array(5)].map(_=>String.fromCharCode(0x4e00+Math.random()*0x4e00|0)).join(''),
-             ()=>btoa(Math.random().toString()).slice(0,10).replace(/[+/=]/g,'x')];
-    return Array(2+Math.floor(Math.random()*3)).fill(0).map(_=>f[Math.floor(Math.random()*f.length)]()).join('_');
-  },
-  emoji:()=>{
-    const e=['🌌','🐱‍🚀','🧬','🌀','👾','🕳️','🎲','🔮','🧪','🧟',😬,😎,🖕];
-    return Array(3+Math.floor(Math.random()*4)).fill(0).map(_=>e[Math.floor(Math.random()*e.length)]).join('')+'_'+Math.random().toString(36).slice(2,6);
-  },
+  full:()=>[...Array(2+Math.floor(Math.random()*3))].map(_=>[Math.random().toString(36).slice(2,10),[...Array(5)].map(_=>String.fromCharCode(0x4e00+Math.random()*0x4e00|0)).join(''),btoa(Math.random().toString()).slice(0,10).replace(/[+/=]/g,'x')][Math.floor(Math.random()*3)]).join('_'),
+  emoji:()=>{const e=['🌌','🐱‍🚀','🧬','🌀','👾','🕳️','🎲','🔮','🧪','🧟'];return Array(3+Math.floor(Math.random()*4)).fill(0).map(_=>e[Math.floor(Math.random()*e.length)]).join('')+'_'+Math.random().toString(36).slice(2,6);},
   base64:()=>btoa(Math.random()+Date.now()).slice(0,16).replace(/[+/=]/g,'x'),
   uuid:()=>'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,c=>{const r=Math.random()*16|0;return(c==='x'?r:(r&0x3|0x8)).toString(16);}),
-  cat:()=>['喵','咪咪','猫','喵呜','喵喵','猫娘','猫猫','猫饼',喵喵喵][Math.floor(Math.random()*8)]+'_'+Math.random().toString(36).slice(2,8),
+  cat:()=>['喵','咪咪','猫','喵呜','喵喵','猫娘','猫猫','猫饼'][Math.floor(Math.random()*8)]+'_'+Math.random().toString(36).slice(2,8),
   reverse:()=>('人类文件'+Math.random().toString(36).slice(2,6)).split('').reverse().join(''),
   hallucination:()=>['GPT_final','模型_未命名','训练_缓存','幻觉_数据','AI_梦见','神经网络_备份','token_溢出','权重_未初始化'][Math.floor(Math.random()*8)]+'_'+Math.random().toString(36).slice(2,6),
-  program:()=>{
-    const pre=['AUDIO','IMG','DATA','VIDEO','FRAME','CHUNK','SAMPLE'][Math.floor(Math.random()*7)];
-    const hex=Math.floor(Math.random()*0x100000).toString(16).padStart(5,'0');
-    return `${pre}_x${hex}`;
-  }
+  program:()=>{const pre=['AUDIO','IMG','DATA','VIDEO','FRAME','CHUNK','SAMPLE'][Math.floor(Math.random()*7)];const hex=Math.floor(Math.random()*0x100000).toString(16).padStart(5,'0');return`${pre}_x${hex}`;}
 };
-function generate(){
-  const file=document.getElementById('fileInput').files[0];
-  if(!file){alert('请先选择文件');return;}
-  const mode=document.getElementById('chaosMode').value;
-  const ext=file.name.split('.').pop();
-  const name=engines[mode]()+'.'+ext;
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(file);
-  a.download=name;
-  a.click();
-  document.getElementById('result').textContent='已生成：'+name;
+
+/* ---------- 批量部分 ---------- */
+const multiFile=document.getElementById('multiFile'),styleSelect=document.getElementById('styleSelect'),listBox=document.getElementById('list');
+function makeOne(name,ext,mode){
+  const n=engines[mode]() + '.' + ext;
+  const a=document.createElement('a'),btn=document.createElement('button');
+  btn.className='down';btn.textContent='下载';
+  btn.onclick=()=>{a.href=URL.createObjectURL(new File([''],name));a.download=n;a.click();};
+  return btn;
 }
+multiFile.onchange=()=>{
+  listBox.innerHTML='';
+  Array.from(multiFile.files).forEach(f=>{
+    const ext=f.name.split('.').pop();
+    const item=document.createElement('div');item.className='item';
+    const span=document.createElement('span');span.textContent=f.name;
+    item.appendChild(span);
+    item.appendChild(makeOne(f.name,ext,styleSelect.value));
+    listBox.appendChild(item);
+  });
+};
+styleSelect.onchange=()=>{if(multiFile.files.length)multiFile.onchange()};
+
+/* ---------- 单文件精管部分 ---------- */
+const singleFile=document.getElementById('singleFile'),singleStyle=document.getElementById('singleStyle'),reGen=document.getElementById('reGen'),nameInput=document.getElementById('nameInput'),downSingle=document.getElementById('downSingle'),singleManage=document.getElementById('singleManage');
+let singleBlob=null;
+function refreshSingle(){
+  if(!singleBlob)return;
+  const ext=singleBlob.name.split('.').pop();
+  const n=engines[singleStyle.value]() + '.' + ext;
+  nameInput.value=n;
+  singleManage.style.display='block';
+}
+singleFile.onchange=()=>{
+  singleBlob=singleFile.files[0];
+  if(!singleBlob){singleManage.style.display='none';return;}
+  refreshSingle();
+};
+reGen.onclick=refreshSingle;
+downSingle.onclick=()=>{
+  if(!singleBlob)return;
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(singleBlob);
+  a.download=nameInput.value||'unknown';
+  a.click();
+};
 </script>
 </body>
 </html>
