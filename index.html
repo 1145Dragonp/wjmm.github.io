@@ -2,11 +2,12 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <title>风格文件名生成器</title>
+  <title>混沌文件名生成器</title>
   <style>
     body {
       font-family: "Microsoft YaHei", sans-serif;
-      background: #f0f4f8;
+      background: #111;
+      color: #0f0;
       text-align: center;
       padding: 60px;
     }
@@ -16,83 +17,113 @@
       font-size: 16px;
     }
     button {
-      background-color: #4CAF50;
-      color: white;
+      background-color: #0f0;
+      color: #000;
       border: none;
       border-radius: 5px;
       cursor: pointer;
     }
     button:hover {
-      background-color: #45a049;
+      background-color: #0c0;
     }
     #result {
       margin-top: 20px;
-      font-size: 18px;
+      font-size: 20px;
+      word-break: break-all;
     }
   </style>
 </head>
 <body>
 
-  <h1>🎭 风格文件名生成器</h1>
-  <p>上传文件，选择风格，生成对应风格的名字～</p>
+  <h1>🧠 混沌文件名生成器</h1>
+  <p>上传文件，进入混沌命名空间……</p>
 
   <input type="file" id="fileInput" />
   <br />
-  <select id="styleSelect">
-    <option value="文艺">文艺风格</option>
-    <option value="程序">程序风格</option>
-    <option value="日常">日常风格</option>
-    <option value="乱码">乱码风格</option>
+  <select id="chaosMode">
+    <option value="full">完全混沌（不可预测）</option>
+    <option value="emoji">Emoji风暴</option>
+    <option value="base64">Base64幽灵</option>
+    <option value="uuid">UUID碎片</option>
+    <option value="cat">猫言猫语</option>
+    <option value="reverse">反转人类</option>
+    <option value="hallucination">AI幻觉</option>
+    <option value="program">程序原始采样风</option>
   </select>
   <br />
-  <button onclick="generateName()">生成并下载</button>
+  <button onclick="generateChaosName()">生成混沌名并下载</button>
 
   <div id="result"></div>
 
   <script>
-    const styles = {
-      文艺: [
-        "星河入梦", "风眠旧笺", "雨落青瓷", "云端来信", "月下听风",
-        "山川与鹿", "雾散听潮", "青灯照壁", "花影扶疏", "鹤归孤山"
-      ],
-      程序: [
-        "main_final_v2", "backup_old_2025", "test_fix_bug", "config_backup", "deploy_ready",
-        "patch_20250924", "init_setup", "cache_clear", "log_err_3", "merge_conflict"
-      ],
-      日常: [
-        "新建文件", "我的文档", "资料备份", "今日笔记", "临时文件",
-        "会议记录", "旅行照片", "购物清单", "工资单", "学习资料"
-      ],
-      乱码: [
-        "�߾�����", "���Ͽ����", "�����ļ�", "δ֪��ʽ", "��������",
-        "��������", "�ҵĵµ�", "�����ļ�", "����ͼƬ", "�������"
-      ]
+    const chaosEngines = {
+      full: () => {
+        const parts = [
+          () => Math.random().toString(36).slice(2, 10),
+          () => new Date().toISOString().replace(/[-:TZ]/g, ""),
+          () => [...Array(5)].map(() => String.fromCharCode(0x4e00 + Math.random() * 0x4e00 | 0)).join(""),
+          () => [...Array(5)].map(() => String.fromCharCode(0x30a0 + Math.random() * 0x60 | 0)).join(""),
+          () => [...Array(5)].map(() => String.fromCharCode(0x61 + Math.random() * 26 | 0)).join(""),
+          () => [...Array(5)].map(() => String.fromCharCode(0x2800 + Math.random() * 0x10ff | 0)).join(""),
+          () => Math.floor(Math.random() * 1e16).toString(16),
+          () => btoa(Math.random().toString()).slice(0, 10),
+          () => ["喵", "汪", "咩", "呱", "啾"][Math.floor(Math.random() * 5)] + Math.random().toString(36).slice(2, 6),
+          () => "�" + Math.random().toString(36).slice(2, 8),
+        ];
+        return Array.from({ length: 2 + Math.floor(Math.random() * 3) }, () => parts[Math.floor(Math.random() * parts.length)]()).join("_");
+      },
+      emoji: () => {
+        const emojis = ["🌌", "🐱‍🚀", "🧬", "🌀", "👾", "🕳️", "🎲", "🔮", "🧪", "🧟"];
+        return Array.from({ length: 3 + Math.floor(Math.random() * 4) }, () => emojis[Math.floor(Math.random() * emojis.length)]).join("") + "_" + Math.random().toString(36).slice(2, 6);
+      },
+      base64: () => {
+        return btoa(Math.random().toString() + Date.now()).slice(0, 16).replace(/[+/=]/g, "x");
+      },
+      uuid: () => {
+        return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, c => {
+          const r = Math.random() * 16 | 0;
+          return (c === "x" ? r : (r & 0x3 | 0x8)).toString(16);
+        });
+      },
+      cat: () => {
+        const cat = ["喵", "咪咪", "猫", "喵呜", "喵喵", "猫娘", "猫猫", "猫饼"];
+        return cat[Math.floor(Math.random() * cat.length)] + "_" + Math.random().toString(36).slice(2, 8);
+      },
+      reverse: () => {
+        const str = "人类文件" + Math.random().toString(36).slice(2, 6);
+        return str.split("").reverse().join("");
+      },
+      hallucination: () => {
+        const fake = ["GPT_final", "模型_未命名", "训练_缓存", "幻觉_数据", "AI_梦见", "神经网络_备份", "token_溢出", "权重_未初始化"];
+        return fake[Math.floor(Math.random() * fake.length)] + "_" + Math.random().toString(36).slice(2, 6);
+      },
+      program: () => {
+        const prefix = ["AUDIO", "IMG", "DATA", "VIDEO", "FRAME", "CHUNK", "SAMPLE", "TEMP"];
+        const pre = prefix[Math.floor(Math.random() * prefix.length)];
+        const hex = Math.floor(Math.random() * 0x100000).toString(16).padStart(5, '0');
+        return `${pre}_x${hex}`;
+      }
     };
 
-    function getRandomName(style) {
-      const list = styles[style];
-      return list[Math.floor(Math.random() * list.length)];
-    }
-
-    function generateName() {
+    function generateChaosName() {
       const input = document.getElementById('fileInput');
       const file = input.files[0];
-      const style = document.getElementById('styleSelect').value;
+      const mode = document.getElementById('chaosMode').value;
 
       if (!file) {
-        alert("请先选择一个文件！");
+        alert("请先上传一个文件！");
         return;
       }
 
       const ext = file.name.split('.').pop();
-      const newName = getRandomName(style) + "." + ext;
+      const chaosName = chaosEngines[mode]() + "." + ext;
 
       const a = document.createElement('a');
       a.href = URL.createObjectURL(file);
-      a.download = newName;
+      a.download = chaosName;
       a.click();
 
-      document.getElementById('result').innerText = `已生成${style}风格文件名：${newName}`;
+      document.getElementById('result').innerText = `混沌名已生成：${chaosName}`;
     }
   </script>
 
