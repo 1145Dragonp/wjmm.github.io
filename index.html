@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>风格文件名生成器</title>
+  <style>
+    body {
+      font-family: "Microsoft YaHei", sans-serif;
+      background: #f0f4f8;
+      text-align: center;
+      padding: 60px;
+    }
+    select, input, button {
+      margin: 10px;
+      padding: 10px;
+      font-size: 16px;
+    }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    #result {
+      margin-top: 20px;
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🎭 风格文件名生成器</h1>
+  <p>上传文件，选择风格，生成对应风格的名字～</p>
+
+  <input type="file" id="fileInput" />
+  <br />
+  <select id="styleSelect">
+    <option value="文艺">文艺风格</option>
+    <option value="程序">程序风格</option>
+    <option value="日常">日常风格</option>
+    <option value="乱码">乱码风格</option>
+  </select>
+  <br />
+  <button onclick="generateName()">生成并下载</button>
+
+  <div id="result"></div>
+
+  <script>
+    const styles = {
+      文艺: [
+        "星河入梦", "风眠旧笺", "雨落青瓷", "云端来信", "月下听风",
+        "山川与鹿", "雾散听潮", "青灯照壁", "花影扶疏", "鹤归孤山"
+      ],
+      程序: [
+        "main_final_v2", "backup_old_2025", "test_fix_bug", "config_backup", "deploy_ready",
+        "patch_20250924", "init_setup", "cache_clear", "log_err_3", "merge_conflict"
+      ],
+      日常: [
+        "新建文件", "我的文档", "资料备份", "今日笔记", "临时文件",
+        "会议记录", "旅行照片", "购物清单", "工资单", "学习资料"
+      ],
+      乱码: [
+        "�߾�����", "���Ͽ����", "�����ļ�", "δ֪��ʽ", "��������",
+        "��������", "�ҵĵµ�", "�����ļ�", "����ͼƬ", "�������"
+      ]
+    };
+
+    function getRandomName(style) {
+      const list = styles[style];
+      return list[Math.floor(Math.random() * list.length)];
+    }
+
+    function generateName() {
+      const input = document.getElementById('fileInput');
+      const file = input.files[0];
+      const style = document.getElementById('styleSelect').value;
+
+      if (!file) {
+        alert("请先选择一个文件！");
+        return;
+      }
+
+      const ext = file.name.split('.').pop();
+      const newName = getRandomName(style) + "." + ext;
+
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(file);
+      a.download = newName;
+      a.click();
+
+      document.getElementById('result').innerText = `已生成${style}风格文件名：${newName}`;
+    }
+  </script>
+
+</body>
+</html>
