@@ -1,131 +1,152 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <title>混沌文件名生成器</title>
-  <style>
-    body {
-      font-family: "Microsoft YaHei", sans-serif;
-      background: #111;
-      color: #0f0;
-      text-align: center;
-      padding: 60px;
-    }
-    select, input, button {
-      margin: 10px;
-      padding: 10px;
-      font-size: 16px;
-    }
-    button {
-      background-color: #0f0;
-      color: #000;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #0c0;
-    }
-    #result {
-      margin-top: 20px;
-      font-size: 20px;
-      word-break: break-all;
-    }
-  </style>
+<meta charset="UTF-8">
+<title>混沌命名器</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root{
+    --bg:#1e1e1e;
+    --card:#252526;
+    --accent:#569cd6;
+    --text:#cccccc;
+    --sub:#888888;
+    --border:#3e3e42;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;font-family:"Segoe UI","Microsoft YaHei",sans-serif;}
+  body{
+    min-height:100vh;
+    background:var(--bg);
+    color:var(--text);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .wrapper{
+    width:90%;
+    max-width:480px;
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:6px;
+    padding:32px 28px;
+  }
+  h1{
+    font-size:22px;
+    margin-bottom:8px;
+    font-weight:600;
+    letter-spacing:.5px;
+  }
+  p{
+    font-size:14px;
+    color:var(--sub);
+    margin-bottom:24px;
+  }
+  label{
+    font-size:13px;
+    color:var(--sub);
+    display:block;
+    margin-bottom:6px;
+  }
+  input[type=file]{
+    width:100%;
+    padding:8px 10px;
+    background:var(--bg);
+    border:1px solid var(--border);
+    color:var(--text);
+    border-radius:4px;
+    font-size:14px;
+    cursor:pointer;
+  }
+  select{
+    width:100%;
+    padding:8px 10px;
+    background:var(--bg);
+    border:1px solid var(--border);
+    color:var(--text);
+    border-radius:4px;
+    font-size:14px;
+    cursor:pointer;
+  }
+  button{
+    width:100%;
+    margin-top:20px;
+    padding:10px;
+    background:var(--accent);
+    color:#fff;
+    border:none;
+    border-radius:4px;
+    font-size:15px;
+    cursor:pointer;
+    transition:background .2s;
+  }
+  button:hover{background:#4b8cc7;}
+  #result{
+    margin-top:18px;
+    font-size:13px;
+    word-break:break-all;
+    color:var(--sub);
+  }
+</style>
 </head>
 <body>
+<div class="wrapper">
+  <h1>混沌命名器</h1>
+  <p>上传文件，选择风格，即刻生成不可预测的文件名。</p>
 
-  <h1>🧠 混沌文件名生成器</h1>
-  <p>上传文件，进入混沌命名空间……</p>
+  <label for="fileInput">1. 选择文件</label>
+  <input type="file" id="fileInput">
 
-  <input type="file" id="fileInput" />
-  <br />
+  <label for="chaosMode" style="margin-top:16px;">2. 命名风格</label>
   <select id="chaosMode">
-    <option value="full">完全混沌（不可预测）</option>
-    <option value="emoji">Emoji风暴</option>
-    <option value="base64">Base64幽灵</option>
-    <option value="uuid">UUID碎片</option>
+    <option value="full">完全混沌</option>
+    <option value="emoji">Emoji 风暴</option>
+    <option value="base64">Base64 幽灵</option>
+    <option value="uuid">UUID 碎片</option>
     <option value="cat">猫言猫语</option>
     <option value="reverse">反转人类</option>
-    <option value="hallucination">AI幻觉</option>
-    <option value="program">程序原始采样风</option>
+    <option value="hallucination">AI 幻觉</option>
+    <option value="program">程序采样</option>
   </select>
-  <br />
-  <button onclick="generateChaosName()">生成混沌名并下载</button>
 
+  <button onclick="generate()">生成并下载</button>
   <div id="result"></div>
+</div>
 
-  <script>
-    const chaosEngines = {
-      full: () => {
-        const parts = [
-          () => Math.random().toString(36).slice(2, 10),
-          () => new Date().toISOString().replace(/[-:TZ]/g, ""),
-          () => [...Array(5)].map(() => String.fromCharCode(0x4e00 + Math.random() * 0x4e00 | 0)).join(""),
-          () => [...Array(5)].map(() => String.fromCharCode(0x30a0 + Math.random() * 0x60 | 0)).join(""),
-          () => [...Array(5)].map(() => String.fromCharCode(0x61 + Math.random() * 26 | 0)).join(""),
-          () => [...Array(5)].map(() => String.fromCharCode(0x2800 + Math.random() * 0x10ff | 0)).join(""),
-          () => Math.floor(Math.random() * 1e16).toString(16),
-          () => btoa(Math.random().toString()).slice(0, 10),
-          () => ["喵", "汪", "咩", "呱", "啾"][Math.floor(Math.random() * 5)] + Math.random().toString(36).slice(2, 6),
-          () => "�" + Math.random().toString(36).slice(2, 8),
-        ];
-        return Array.from({ length: 2 + Math.floor(Math.random() * 3) }, () => parts[Math.floor(Math.random() * parts.length)]()).join("_");
-      },
-      emoji: () => {
-        const emojis = ["🌌", "🐱‍🚀", "🧬", "🌀", "👾", "🕳️", "🎲", "🔮", "🧪", "🧟"];
-        return Array.from({ length: 3 + Math.floor(Math.random() * 4) }, () => emojis[Math.floor(Math.random() * emojis.length)]).join("") + "_" + Math.random().toString(36).slice(2, 6);
-      },
-      base64: () => {
-        return btoa(Math.random().toString() + Date.now()).slice(0, 16).replace(/[+/=]/g, "x");
-      },
-      uuid: () => {
-        return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, c => {
-          const r = Math.random() * 16 | 0;
-          return (c === "x" ? r : (r & 0x3 | 0x8)).toString(16);
-        });
-      },
-      cat: () => {
-        const cat = ["喵", "咪咪", "猫", "喵呜", "喵喵", "猫娘", "猫猫", "猫饼"];
-        return cat[Math.floor(Math.random() * cat.length)] + "_" + Math.random().toString(36).slice(2, 8);
-      },
-      reverse: () => {
-        const str = "人类文件" + Math.random().toString(36).slice(2, 6);
-        return str.split("").reverse().join("");
-      },
-      hallucination: () => {
-        const fake = ["GPT_final", "模型_未命名", "训练_缓存", "幻觉_数据", "AI_梦见", "神经网络_备份", "token_溢出", "权重_未初始化"];
-        return fake[Math.floor(Math.random() * fake.length)] + "_" + Math.random().toString(36).slice(2, 6);
-      },
-      program: () => {
-        const prefix = ["AUDIO", "IMG", "DATA", "VIDEO", "FRAME", "CHUNK", "SAMPLE", "TEMP"];
-        const pre = prefix[Math.floor(Math.random() * prefix.length)];
-        const hex = Math.floor(Math.random() * 0x100000).toString(16).padStart(5, '0');
-        return `${pre}_x${hex}`;
-      }
-    };
-
-    function generateChaosName() {
-      const input = document.getElementById('fileInput');
-      const file = input.files[0];
-      const mode = document.getElementById('chaosMode').value;
-
-      if (!file) {
-        alert("请先上传一个文件！");
-        return;
-      }
-
-      const ext = file.name.split('.').pop();
-      const chaosName = chaosEngines[mode]() + "." + ext;
-
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(file);
-      a.download = chaosName;
-      a.click();
-
-      document.getElementById('result').innerText = `混沌名已生成：${chaosName}`;
-    }
-  </script>
-
+<script>
+const engines={
+  full:()=>{
+    const f=[()=>Math.random().toString(36).slice(2,10),
+             ()=>[...Array(5)].map(_=>String.fromCharCode(0x4e00+Math.random()*0x4e00|0)).join(''),
+             ()=>btoa(Math.random().toString()).slice(0,10).replace(/[+/=]/g,'x')];
+    return Array(2+Math.floor(Math.random()*3)).fill(0).map(_=>f[Math.floor(Math.random()*f.length)]()).join('_');
+  },
+  emoji:()=>{
+    const e=['🌌','🐱‍🚀','🧬','🌀','👾','🕳️','🎲','🔮','🧪','🧟',😬,😎,🖕];
+    return Array(3+Math.floor(Math.random()*4)).fill(0).map(_=>e[Math.floor(Math.random()*e.length)]).join('')+'_'+Math.random().toString(36).slice(2,6);
+  },
+  base64:()=>btoa(Math.random()+Date.now()).slice(0,16).replace(/[+/=]/g,'x'),
+  uuid:()=>'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,c=>{const r=Math.random()*16|0;return(c==='x'?r:(r&0x3|0x8)).toString(16);}),
+  cat:()=>['喵','咪咪','猫','喵呜','喵喵','猫娘','猫猫','猫饼',喵喵喵][Math.floor(Math.random()*8)]+'_'+Math.random().toString(36).slice(2,8),
+  reverse:()=>('人类文件'+Math.random().toString(36).slice(2,6)).split('').reverse().join(''),
+  hallucination:()=>['GPT_final','模型_未命名','训练_缓存','幻觉_数据','AI_梦见','神经网络_备份','token_溢出','权重_未初始化'][Math.floor(Math.random()*8)]+'_'+Math.random().toString(36).slice(2,6),
+  program:()=>{
+    const pre=['AUDIO','IMG','DATA','VIDEO','FRAME','CHUNK','SAMPLE'][Math.floor(Math.random()*7)];
+    const hex=Math.floor(Math.random()*0x100000).toString(16).padStart(5,'0');
+    return `${pre}_x${hex}`;
+  }
+};
+function generate(){
+  const file=document.getElementById('fileInput').files[0];
+  if(!file){alert('请先选择文件');return;}
+  const mode=document.getElementById('chaosMode').value;
+  const ext=file.name.split('.').pop();
+  const name=engines[mode]()+'.'+ext;
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(file);
+  a.download=name;
+  a.click();
+  document.getElementById('result').textContent='已生成：'+name;
+}
+</script>
 </body>
 </html>
